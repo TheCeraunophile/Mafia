@@ -1,10 +1,12 @@
 import java.util.Scanner;
 public class God {
     private int DayOrNight=1;
-    boolean isGameCreated=false;
-    String[] roles = {"Joker", "villager", "detective", "doctor", "bulletproof", "mafia", "godfather", "silencer"};
+    private boolean isGameCreated=false;
+    private boolean rolesPushed=false;
+    private boolean gameStarted=false;
+    private final String[] roles = {"Joker", "villager", "detective", "doctor", "bulletproof", "mafia", "godfather", "silencer"};
     String[] nameOfPlayers;
-    Player[] players = new Player[8];
+    private final Player[] players = new Player[8];         /// enhance of being final
     static Scanner scanner = new Scanner(System.in);
 
     public void creatingGame(){
@@ -14,6 +16,7 @@ public class God {
             String name = scanner.next();
             int remaining = 8-counter;
             switch (name){
+                // TODO: 24/03/2021 should be writed with REGEX
                 case "create_game":
                     System.out.println("the game already created");break;
                 case "assign_role":
@@ -32,8 +35,8 @@ public class God {
     }
 
     private boolean isTheName(String name){
-        for (int i=0;i<this.nameOfPlayers.length;i++){
-            if (nameOfPlayers[i].equals(name)){
+        for (String nameOfPlayer : this.nameOfPlayers) {
+            if (nameOfPlayer.equals(name)) {
                 return true;
             }
         }
@@ -41,8 +44,8 @@ public class God {
         return false;
     }
     private boolean isTheRole(String role){
-        for (int i=0;i<this.roles.length;i++){
-            if (this.roles[i].equals(role)){
+        for (String s : this.roles) {
+            if (s.equals(role)) {
                 return true;
             }
         }
@@ -50,53 +53,162 @@ public class God {
         return false;
     }
 
+    private Player findingThePlayer(String name){
+        for (Player player : this.players) {
+            if (player.name.equals(name)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
     private void pullingTheRoleAndName(String name,String role,int counter){
-        // TODO: 22/03/2021  
+        // TODO: 23/03/2021 should be writed whit REGEX 
+        switch (role){
+            case "joker":players[counter]=new Joker(name,role);break;
+            case "bulletproof":players[counter]=new BulletProof(name,role);break;
+            case "villager":players[counter]=new Villager(name,role);break;
+            case "mafia":players[counter]=new Mafia(name,role);break;
+            case "godfather":players[counter]=new GodFather(name,role);break;
+            case "doctoe":players[counter]=new Doctor(name,role);break;
+            case "detector":players[counter]=new Detector(name,role);break;
+            case "silencer":players[counter]=new Silencer(name,role);break;
+        }
     }
 
     public void assignRole(){
-        if (!isGameCreated){
-            System.out.println("you should first create a game then assign role for players");
+        if (!isGameCreated || gameStarted){
+            if (gameStarted) {
+                System.out.println("game already started and all of the players has role");
+            }else {
+                System.out.println("you should first create a game then assign role for players");
+            }
         }else {
             int counter=0;
             while (counter<8){
                 String line = scanner.nextLine();
                 int firstSpace=line.indexOf(" ");
-                String name=line.substring(0,firstSpace);
-                String role=line.substring(++firstSpace);
-                boolean nameStatus=false,roleStatus=false;
-                if (isTheName(name)){
-                    nameStatus=true;
-                }
-                if (isTheRole(role)){
-                    roleStatus=true;
-                }
-                if (roleStatus && nameStatus) {
-                    players[counter] = new Player(name, role);   // TODO: 22/03/2021  polimorphic for this line whit Method or Not
-                    counter++;
+                if (!(firstSpace==-1)) {
+                    String name = line.substring(0, firstSpace);
+                    String role = line.substring(++firstSpace);
+                    boolean nameStatus = false, roleStatus = false;
+                    if (isTheName(name)) {
+                        nameStatus = true;
+                    }
+                    if (isTheRole(role)) {
+                        roleStatus = true;
+                    }
+                    if (roleStatus && nameStatus) {
+                        pullingTheRoleAndName(name, role, counter);
+                        counter++;
+                        if (counter==8){
+                            rolesPushed=true;
+                        }
+                    }
+                }else {
+                    switch (line){
+                        case "start_game": System.out.println((8 - counter) + " player whitout a role you should first detect their role");break;
+//                        case "" todo we can pull more intonation and write whith REGEX
+                    }
                 }
             }
         }
     }
     
     public void day(){
-        for (Player player : players) {
-            player.toString();
-        }
+        if (isGameCreated && rolesPushed){
+            gameStarted=true;
+            for (Player player : players) {
+                if (!player.isSilent && player.isLive){
+                    System.out.println(player);
+                }
+            }
+            System.out.println("Day " + DayOrNight);
+            System.out.println("waited for vote");
+            String vote="";
+            while (!vote.equals("end_vote")){
+                vote= scanner.nextLine();
+                int firstSpace=vote.indexOf(" ");
 
-        // TODO: 22/03/2021  
-        
-        middleOFNightAndDay("night");
+                String voterName =vote.substring(0,firstSpace);
+                String voted = vote.substring(++firstSpace);
+                
+                if (isTheName(voterName)){
+                    if (!findingThePlayer(voterName).isSilent && findingThePlayer(voterName).isLive && findingThePlayer(voted).isLive){
+                        findingThePlayer(voted).conjectureMafiVote++;
+                    }else {
+                        // TODO: 24/03/2021 switch 
+                    }
+                }else {
+                    // TODO: 23/03/2021 another switch :(
+                }
+                    vote=scanner.nextLine();
+            }
+                Player temp = players[0];
+            for (int i=1;i<players.length;i++){
+                if (temp.conjectureMafiVote<players[i].conjectureMafiVote){
+                    temp=players[i];
+                }
+            }
+            boolean shouldKill=true;
+            int numberOFVoted= temp.conjectureMafiVote;
+            for (int i=0;i<players.length;i++){
+                if (players[i].conjectureMafiVote==numberOFVoted){
+                    shouldKill=false;
+                }
+            }
+            if (shouldKill){
+                temp.isLive=false;
+                System.out.println("The Player " + temp.name + " kiled");
+            }
+
+            middleOFNightAndDay("night");
+        }else {
+            if (!isGameCreated){
+                System.out.println("no created Game yet");
+            }else {
+                System.out.println("one or more players has not a role yet");
+            }
+        }
     }
     
     private void middleOFNightAndDay(String DayOrNight){
-        // TODO: 22/03/2021  
+        int numberOfMafis=0;
+        for (Player player : players) {
+            if (player instanceof Joker) {
+                if (!player.isLive) {
+                    System.out.println(" joker whit name " + player.name + " wone the Game");
+                    System.exit(0);
+                }
+            }
+            if (player instanceof Mafia || player instanceof GodFather) {
+                numberOfMafis++;
+            }
+        }
+        if (numberOfMafis==0){
+            System.out.println("The vilagers wone the Game");
+            System.exit(0);
+        }
+        int numberOfLivedPlayers=0;
+        for (Player player : players){
+            if (player.isLive && !(player instanceof GodFather) && !(player instanceof Mafia)){
+                numberOfLivedPlayers++;
+            }
+        }
+        if (numberOfLivedPlayers==numberOfMafis){
+            System.out.println("The mafias wone the Game");
+            System.exit(0);
+        }
+        switch (DayOrNight) {
+            case "day" -> day();
+            case "night" -> night();
+        }
     }
     
     private void night(){
         for (Player player : players) {
-            if (player instanceof GettedUpPlayer) {
-                player.toString();
+            if (player instanceof GettedUpPlayer && player.isLive) {
+                System.out.println(player);
             }
         }
 
@@ -114,7 +226,6 @@ public class God {
                 case "assign_role":
                 case "start_game":
 //                case "end_vote":
-                
                 case "get_game_state":
             }
         }
