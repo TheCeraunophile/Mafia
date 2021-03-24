@@ -6,12 +6,14 @@ public class God {
     private boolean gameStarted=false;
     private final String[] roles = {"Joker", "villager", "detective", "doctor", "bulletproof", "mafia", "godfather", "silencer"};
     String[] nameOfPlayers;
-    private final Player[] players = new Player[8];         /// enhance of being final
+    private Player[] players ;         /// enhance of being final
     static Scanner scanner = new Scanner(System.in);
 
     public void creatingGame(){
         isGameCreated=true;
         int counter=0;
+        String names=scanner.nextLine();
+        // TODO: 24/03/2021 sending the names in it's String in to array nameOfPlayers
         while (counter<8){
             String name = scanner.next();
             int remaining = 8-counter;
@@ -88,7 +90,7 @@ public class God {
             while (counter<8){
                 String line = scanner.nextLine();
                 int firstSpace=line.indexOf(" ");
-                if (!(firstSpace==-1)) {
+                try {
                     String name = line.substring(0, firstSpace);
                     String role = line.substring(++firstSpace);
                     boolean nameStatus = false, roleStatus = false;
@@ -105,10 +107,10 @@ public class God {
                             rolesPushed=true;
                         }
                     }
-                }else {
+                }catch (Exception exception){
                     switch (line){
                         case "start_game": System.out.println((8 - counter) + " player whitout a role you should first detect their role");break;
-//                        case "" todo we can pull more intonation and write whith REGEX
+                        //todo we can pull more intonation and write whith REGEX
                     }
                 }
             }
@@ -120,41 +122,42 @@ public class God {
             gameStarted=true;
             for (Player player : players) {
                 if (!player.isSilent && player.isLive){
-                    System.out.println(player);
+                    System.out.print(player);
                 }
             }
             System.out.println("Day " + DayOrNight);
             System.out.println("waited for vote");
-            String vote="";
+            String vote=scanner.nextLine();
             while (!vote.equals("end_vote")){
-                vote= scanner.nextLine();
                 int firstSpace=vote.indexOf(" ");
-
-                String voterName =vote.substring(0,firstSpace);
-                String voted = vote.substring(++firstSpace);
-                
-                if (isTheName(voterName)){
-                    if (!findingThePlayer(voterName).isSilent && findingThePlayer(voterName).isLive && findingThePlayer(voted).isLive){
-                        findingThePlayer(voted).conjectureMafiVote++;
-                    }else {
-                        // TODO: 24/03/2021 switch 
-                    }
-                }else {
-                    // TODO: 23/03/2021 another switch :(
+                try {
+                    String voterName =vote.substring(0,firstSpace);
+                    String voted = vote.substring(++firstSpace);
+                    if (isTheName(voterName)){
+                        if (!findingThePlayer(voterName).isSilent && findingThePlayer(voterName).isLive && findingThePlayer(voted).isLive){
+                            findingThePlayer(voted).conjectureMafiVote++;
+                        }else {
+                            // TODO: 24/03/2021 switch
+                        }
                 }
-                    vote=scanner.nextLine();
+                }catch (Exception e){
+                    // TODO: 24/03/2021 Switch
+                }
+                vote=scanner.nextLine();
             }
-                Player temp = players[0];
-            for (int i=1;i<players.length;i++){
-                if (temp.conjectureMafiVote<players[i].conjectureMafiVote){
-                    temp=players[i];
+            Player temp = players[0];
+            for (Player player:players){
+                if (temp.conjectureMafiVote<player.conjectureMafiVote){
+                    temp=player;
                 }
             }
             boolean shouldKill=true;
             int numberOFVoted= temp.conjectureMafiVote;
-            for (int i=0;i<players.length;i++){
-                if (players[i].conjectureMafiVote==numberOFVoted){
-                    shouldKill=false;
+            for (Player player : players) {
+                if (!player.equals(temp)) {
+                    if (player.conjectureMafiVote == numberOFVoted) {
+                        shouldKill = false;
+                    }
                 }
             }
             if (shouldKill){
@@ -212,10 +215,35 @@ public class God {
             }
         }
 
-        // TODO: 22/03/2021  
-        
+
+        // TODO: 22/03/2021  for nigth
+        Player haveToKil;      //doctor & mafia
+        Player checkOut;       //detective & mafia & godfather
+                               //silencer
+
+
+
+
+
+        ///
         DayOrNight++;
         middleOFNightAndDay("day");
+    }
+
+    public void getGameStatus(){
+        int numberOfLivedPlayers=0;
+        for (Player player : players){
+            if (player.isLive && !(player instanceof GodFather) && !(player instanceof Mafia)){
+                numberOfLivedPlayers++;
+            }
+        }
+        int numberOfMafia=0;
+        for (Player player : players){
+            if (player instanceof Mafia || player instanceof GodFather){
+                numberOfMafia++;
+            }
+        }
+        System.out.println("we have now " + numberOfMafia + " mafia & " + numberOfLivedPlayers + " lived vilager");
     }
     
     public static void main(String[] args) {
