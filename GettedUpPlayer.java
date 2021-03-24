@@ -1,5 +1,4 @@
 public class GettedUpPlayer extends Player{
-    boolean isLive=true;
 
     public GettedUpPlayer(String name, String role) {
         super(name, role);
