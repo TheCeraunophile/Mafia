@@ -1,38 +1,37 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Scanner;
 public class God {
-    private int DayOrNight=1;
+    private static final God god = new God();
+    private int numberOfDayOrNight =1;
     private boolean isGameCreated=false;
     private boolean rolesPushed=false;
     private boolean gameStarted=false;
     private final String[] roles = {"Joker", "villager", "detective", "doctor", "bulletproof", "mafia", "godfather", "silencer"};
-    String[] nameOfPlayers;
+    private String[] nameOfPlayers;
+    private int lengthOfPlayersNames=0;
     private Player[] players ;         /// enhance of being final
     static Scanner scanner = new Scanner(System.in);
 
+    private God(){}
+
+    public God getGod(){
+        return god;
+    }
+
     public void creatingGame(){
         isGameCreated=true;
-        int counter=0;
         String names=scanner.nextLine();
-        // TODO: 24/03/2021 sending the names in it's String in to array nameOfPlayers
-        while (counter<8){
-            String name = scanner.next();
-            int remaining = 8-counter;
-            switch (name){
-                // TODO: 24/03/2021 should be writed with REGEX
-                case "create_game":
-                    System.out.println("the game already created");break;
-                case "assign_role":
-                    System.out.println("you must complet another " + remaining + " Player");
-                case "start_game":
-                    System.out.println("you not fill minimom of players");break;
-                case "end_vote":
-                    System.out.println("you not fill minimom of players");break;
-                case "end night":
-                    System.out.println("you not fill minimom of players");break;
-                case "get_game_state":
-                    System.out.println("you not fill minimom of players");break;
-                default:nameOfPlayers[counter]=name;counter++;break;
-            }
+        Pattern pattern1 = Pattern.compile("[a-z,A-Z]{1,}");
+        Matcher matcher1 = pattern1.matcher(names);
+        while (matcher1.find()){
+            nameOfPlayers[lengthOfPlayersNames]=names.substring(matcher1.start(), matcher1.end());
+            lengthOfPlayersNames++;
+        }
+        if (lengthOfPlayersNames<9){
+            System.out.println("you must atlaste input 8 player you should input " + (8 - lengthOfPlayersNames) + " player more");
+            System.out.println("waiting to input remained player");
+            creatingGame();
         }
     }
 
@@ -45,6 +44,7 @@ public class God {
         System.out.println("The name ' " + name + " ' Not found");
         return false;
     }
+
     private boolean isTheRole(String role){
         for (String s : this.roles) {
             if (s.equals(role)) {
@@ -65,16 +65,15 @@ public class God {
     }
 
     private void pullingTheRoleAndName(String name,String role,int counter){
-        // TODO: 23/03/2021 should be writed whit REGEX 
-        switch (role){
-            case "joker":players[counter]=new Joker(name,role);break;
-            case "bulletproof":players[counter]=new BulletProof(name,role);break;
-            case "villager":players[counter]=new Villager(name,role);break;
-            case "mafia":players[counter]=new Mafia(name,role);break;
-            case "godfather":players[counter]=new GodFather(name,role);break;
-            case "doctoe":players[counter]=new Doctor(name,role);break;
-            case "detector":players[counter]=new Detector(name,role);break;
-            case "silencer":players[counter]=new Silencer(name,role);break;
+        switch (role) {
+            case "joker" -> players[counter] = new Joker(name, role);
+            case "bulletproof" -> players[counter] = new BulletProof(name, role);
+            case "villager" -> players[counter] = new Villager(name, role);
+            case "mafia" -> players[counter] = new Mafia(name, role);
+            case "godfather" -> players[counter] = new GodFather(name, role);
+            case "doctoe" -> players[counter] = new Doctor(name, role);
+            case "detector" -> players[counter] = new Detector(name, role);
+            case "silencer" -> players[counter] = new Silencer(name, role);
         }
     }
 
@@ -87,7 +86,8 @@ public class God {
             }
         }else {
             int counter=0;
-            while (counter<8){
+
+            while (counter< nameOfPlayers.length){
                 String line = scanner.nextLine();
                 int firstSpace=line.indexOf(" ");
                 try {
@@ -103,14 +103,15 @@ public class God {
                     if (roleStatus && nameStatus) {
                         pullingTheRoleAndName(name, role, counter);
                         counter++;
-                        if (counter==8){
+                        if (counter== nameOfPlayers.length-1){
                             rolesPushed=true;
                         }
                     }
                 }catch (Exception exception){
                     switch (line){
-                        case "start_game": System.out.println((8 - counter) + " player whitout a role you should first detect their role");break;
-                        //todo we can pull more intonation and write whith REGEX
+                        case "start_game": System.out.println((nameOfPlayers.length - counter) +
+                                " player whitout a role you should first detect their role");break;
+                        case "create_game": System.out.println("you already create your game");break;
                     }
                 }
             }
@@ -125,7 +126,7 @@ public class God {
                     System.out.print(player);
                 }
             }
-            System.out.println("Day " + DayOrNight);
+            System.out.println("Day " + numberOfDayOrNight);
             System.out.println("waited for vote");
             String vote=scanner.nextLine();
             while (!vote.equals("end_vote")){
@@ -137,11 +138,29 @@ public class God {
                         if (!findingThePlayer(voterName).isSilent && findingThePlayer(voterName).isLive && findingThePlayer(voted).isLive){
                             findingThePlayer(voted).conjectureMafiVote++;
                         }else {
-                            // TODO: 24/03/2021 switch
+                            if (findingThePlayer(voterName).isSilent)
+                                System.out.println("voter is silencer");
+                            if (!findingThePlayer(voterName).isLive)
+                                System.out.println("The voter already dead");
+                            if (!findingThePlayer(voted).isLive)
+                                System.out.println("votee already dead");
                         }
                 }
-                }catch (Exception e){
-                    // TODO: 24/03/2021 Switch
+                }catch (Exception e) {
+                    switch (vote) {
+                        case "create_game":
+                            System.out.println("the game already created");
+                            break;
+                        case "assign_role":
+                            System.out.println("you already assign the role of all players");
+                            break;
+                        case "start_game":
+                            System.out.println("the game already started");
+                            break;
+                        case "get_game_state":
+                            getGameStatus();
+                            break;
+                    }
                 }
                 vote=scanner.nextLine();
             }
@@ -164,7 +183,6 @@ public class God {
                 temp.isLive=false;
                 System.out.println("The Player " + temp.name + " kiled");
             }
-
             middleOFNightAndDay("night");
         }else {
             if (!isGameCreated){
@@ -172,6 +190,10 @@ public class God {
             }else {
                 System.out.println("one or more players has not a role yet");
             }
+        }
+
+        for (Player player:players){
+            player.isSilent=false;
         }
     }
     
@@ -214,19 +236,86 @@ public class God {
                 System.out.println(player);
             }
         }
+        String command=scanner.nextLine();
+        Player[] killedByMafiInNigth=new Player[20];
+        Player middleOfDeadAndLive;
+        boolean isDetectorChose=false;
+        while (!command.equals("nigth_end")) {
+            int firstSpace = command.indexOf(" ");
+            try {
+                String name1 = command.substring(0, firstSpace);
+                String name2 = command.substring(++firstSpace);
+                if (isTheName(name1) && isTheName(name2)) {
+                    Player comander = findingThePlayer(name1);
+                    Player detected = findingThePlayer(name2);
+                    if (comander==null || detected==null){
+                        if (comander==null)
+                            System.out.println("the player whith name " + name1 + " not found");
+                        if (detected==null)
+                            System.out.println("the player whith name " + name2 + " not found");
+                    }else {
+                        if (comander.isLive && detected.isLive){
+                            if (comander instanceof AsleepedPlayer){
+                                System.out.println("user can not wake up during night");
+                            }
+                            if (comander instanceof Detector){
+                                if (!isDetectorChose) {
+                                    if (detected instanceof Mafia) {
+                                        System.out.println("YES");
+                                    } else {
+                                        System.out.println("NO");
+                                    }
+                                    isDetectorChose=true;
+                                }else {
+                                    System.out.println("detective has already asked");
+                                }
+                            }
+                            if (comander instanceof Silencer){
+                                detected.isSilent=true;
+                            }
+                            if (comander instanceof Mafia || comander instanceof GodFather){
+                                for (Player player:killedByMafiInNigth){
+                                    if (player==null){
+                                        player=detected;
+                                    }
+                                }
+                            }
+                            if (comander instanceof Doctor){
+                                middleOfDeadAndLive=detected;
+                            }
+                        }else {
+                            if (!comander.isLive){
+                                System.out.println("the player can't wakeup during the nigth");
+                            }
+                            if (!detected.isLive){
+                                System.out.println("votee already dead");
+                            }
+                        }
+                    }
+                }
+            } catch (Exception exception) {
+                switch (command) {
+                    case "create_game":
+                        System.out.println("the game already created");
+                        break;
+                    case "assign_role":
+                        System.out.println("you already assign the role of all players");
+                        break;
+                    case "start_game":
+                        System.out.println("the game already started");
+                        break;
+                    case "get_game_state":
+                        getGameStatus();
+                        break;
+                }
+            }
+            command= scanner.nextLine();
+        }
 
 
-        // TODO: 22/03/2021  for nigth
-        Player haveToKil;      //doctor & mafia
-        Player checkOut;       //detective & mafia & godfather
-                               //silencer
+        // TODO: 25/03/2021 a way for detecting killed or not
 
-
-
-
-
-        ///
-        DayOrNight++;
+        numberOfDayOrNight++;
         middleOFNightAndDay("day");
     }
 
@@ -244,18 +333,5 @@ public class God {
             }
         }
         System.out.println("we have now " + numberOfMafia + " mafia & " + numberOfLivedPlayers + " lived vilager");
-    }
-    
-    public static void main(String[] args) {
-        while (scanner.hasNext()) {
-            String act = scanner.next();
-            switch (act) {
-                case "create_game":
-                case "assign_role":
-                case "start_game":
-//                case "end_vote":
-                case "get_game_state":
-            }
-        }
     }
 }
