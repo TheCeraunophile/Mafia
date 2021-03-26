@@ -1,18 +1,28 @@
 public class Player {
-    String name;
-    String role;
-    boolean isSilent=false;
-    boolean isLive=true;
-    int conjectureMafiVote=0;
-    public Player(String name,String role) {
+    protected String name;
+    protected Roles role;
+    protected boolean isSilent=false;
+    protected boolean isLive=true;
+    protected boolean rescue = false;
+    protected int conjectureMafiVote=0;
+
+    protected void die(String str){
+        if (rescue) {
+            rescue = false;
+        }else {
+            isLive=false;
+        }
+
+    }
+
+    protected Player(String name,Roles role) {
         this.name = name;
         this.role=role;
     }
 
     @Override
     public String toString(){
-        String result =" The person : " + name + " Whit role of " + role+"  ";
-        return result;
+        return " The person : " + name + " Whit role of " + role;
     }
 
     @Override
@@ -23,4 +33,7 @@ public class Player {
         return name.equals(player.name);
     }
 
+    protected String getRole() {
+        return role.toString();
+    }
 }
