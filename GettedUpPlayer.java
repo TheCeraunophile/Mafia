@@ -1,12 +1,13 @@
 public class GettedUpPlayer extends Player{
 
+    protected boolean isVoted = false;
     public GettedUpPlayer(String name, Roles role) {
         super(name, role);
     }
 
     @Override
     public String toString(){
-        String result =" The person : " + name + " Whit role of " + role;
+        String result =" The person : " + name + " With role of " + role;
         return result;
     }
 }

@@ -6,13 +6,14 @@ public class Player {
     protected boolean rescue = false;
     protected int conjectureMafiVote=0;
 
-    protected void die(String str){
+    protected void die(){
         if (rescue) {
             rescue = false;
+            System.out.println("no player kiled -__- Doctor saved");
         }else {
+            System.out.println("player with name "+this.name+" kiled");
             isLive=false;
         }
-
     }
 
     protected Player(String name,Roles role) {
@@ -22,7 +23,7 @@ public class Player {
 
     @Override
     public String toString(){
-        return " The person : " + name + " Whit role of " + role;
+        return " The person : " + name + " With role of " + role;
     }
 
     @Override
