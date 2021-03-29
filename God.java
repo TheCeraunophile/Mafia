@@ -234,7 +234,7 @@ public class God {
         System.out.println("nigth "+numberOfDayOrNight);
         for (Player player : players) {
             if (player!=null)
-            if (player instanceof GettedUpPlayer && player.isLive) {
+            if (player instanceof MustBeGetUp && player.isLive) {
                 System.out.println(player);
             }
         }
@@ -250,7 +250,7 @@ public class God {
                     Player voter = findingThePlayer(name1);
                     Player votee = findingThePlayer(name2);
                     if (voter.isLive && votee.isLive) {
-                        if (voter instanceof AsleepedPlayer) {
+                        if (voter instanceof MustBeSleep) {
                             System.out.println("user can not wake up during night");
                         }
                         if (voter instanceof Detective) {
@@ -391,8 +391,8 @@ public class God {
 
         for (Player player : players){
             if (player!=null){
-                if (player instanceof GettedUpPlayer) {
-                    ((GettedUpPlayer) player).isVoted=false;
+                if (player instanceof MustBeGetUp) {
+                    ((MustBeGetUp) player).isVoted=false;
                 }
                 player.conjectureMafiVote = 0;
                 player.rescue = false;

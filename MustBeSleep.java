@@ -1,22 +1,22 @@
-public class AsleepedPlayer extends Player{
+public class MustBeSleep extends Player{
 
-    public AsleepedPlayer(String name, Roles role) {
+    public MustBeSleep(String name, Roles role) {
         super(name, role);
     }
 }
-class Joker extends AsleepedPlayer{
+class Joker extends MustBeSleep{
 
     public Joker(String name, Roles role) {
         super(name, role);
     }
 }
-class Villager extends AsleepedPlayer{
+class Villager extends MustBeSleep{
 
     public Villager(String name, Roles role) {
         super(name, role);
     }
 }
-class BulletProof extends AsleepedPlayer{
+class BulletProof extends MustBeSleep{
 
     boolean hasProof=true;
 

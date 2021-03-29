@@ -1,7 +1,7 @@
-public class GettedUpPlayer extends Player{
+public class MustBeGetUp extends Player{
 
     protected boolean isVoted = false;
-    public GettedUpPlayer(String name, Roles role) {
+    public MustBeGetUp(String name, Roles role) {
         super(name, role);
     }
 
@@ -11,31 +11,31 @@ public class GettedUpPlayer extends Player{
         return result;
     }
 }
-class Detective extends GettedUpPlayer{
+class Detective extends MustBeGetUp {
 
     public Detective(String name, Roles role) {
         super(name, role);
     }
 }
-class Doctor extends GettedUpPlayer{
+class Doctor extends MustBeGetUp {
 
     public Doctor(String name, Roles role) {
         super(name, role);
     }
 }
-class Mafia extends GettedUpPlayer{
+class Mafia extends MustBeGetUp {
 
     public Mafia(String name, Roles role) {
         super(name, role);
     }
 }
-class GodFather extends GettedUpPlayer{
+class GodFather extends MustBeGetUp {
 
     public GodFather(String name, Roles role) {
         super(name, role);
     }
 }
-class Silencer extends GettedUpPlayer{
+class Silencer extends MustBeGetUp {
 
     public Silencer(String name, Roles role) {
         super(name, role);
