@@ -9,7 +9,7 @@ public class God {
     private boolean gameStarted=false;
     private final String[] nameOfPlayers = new String[15];
     private int lengthOfPlayersNames=0;
-    private final Player[] players = new Player[15];         /// enhance of being final
+    private final Player[] players = new Player[15];
     static Scanner scanner = new Scanner(System.in);
 
     private God(){}
@@ -73,7 +73,7 @@ public class God {
                     case detective -> players[counter] = new Detective(name, role);
                     case silencer -> players[counter] = new Silencer(name, role);
                 }
-                System.out.println("the player whith name "+name+" and role of "+nameOfRole+" is add succesfuly");
+                System.out.println("the player with name "+name+" and role of "+nameOfRole+" is add succesfuly");
                 break;
             }
         }
@@ -91,7 +91,7 @@ public class God {
         }else {
             System.out.println("wayting to assign");
             int counter=0;
-            while (counter< lengthOfPlayersNames){
+            while (counter < lengthOfPlayersNames){
                 String line = scanner.nextLine();
                 int firstSpace=line.indexOf(" ");
                 try {
@@ -107,10 +107,11 @@ public class God {
                         }
                     }
                 }catch (Exception exception){
-                    switch (line){
-                        case "start_game": System.out.println((lengthOfPlayersNames - counter) +
-                                " player whitout a role you should first detect their role");break;
-                        case "create_game": System.out.println("you already create your game");break;
+                    switch (line) {
+                        case "start_game" -> System.out.println((lengthOfPlayersNames - counter) +
+                                " player whitout a role you should first detect their role");
+                        case "create_game" -> System.out.println("you already create your game");
+                        default -> System.out.println("command not found");
                     }
                 }
             }
@@ -118,6 +119,7 @@ public class God {
     }
 
     public void day(){
+        System.out.println("Day " + numberOfDayOrNight);
         if (isGameCreated && rolesPushed){
             gameStarted=true;
             for (Player player : players) {
@@ -126,43 +128,37 @@ public class God {
                     System.out.println(player);
                 }
             }
-            System.out.println("Day " + numberOfDayOrNight);
-            System.out.println("waited for vote");
-            String vote=scanner.nextLine();
-            while (!vote.equals("end_vote")){
-                int firstSpace=vote.indexOf(" ");
+            System.out.println("waited for votee & voter");
+            String voteAndVoter=scanner.nextLine();
+            while (!voteAndVoter.equals("end_vote")){
+                int firstSpace=voteAndVoter.indexOf(" ");
                 try {
-                    String voterName =vote.substring(0,firstSpace);
-                    String voted = vote.substring(++firstSpace);
-                    if (isTheName(voterName) && isTheName(voted)){
-                        if (!findingThePlayer(voterName).isSilent && findingThePlayer(voterName).isLive && findingThePlayer(voted).isLive){
-                            findingThePlayer(voted).conjectureMafiVote++;
+                    String name1 =voteAndVoter.substring(0,firstSpace);
+                    String name2 = voteAndVoter.substring(++firstSpace);
+                    if (isTheName(name1) && isTheName(name2)){
+                        Player voter = findingThePlayer(name1);
+                        Player votee = findingThePlayer(name2);
+                        if (votee.isLive && !voter.isSilent && voter.isLive){
+                            votee.conjectureMafiVote++;
                         }else {
-                            if (findingThePlayer(voterName).isSilent)
-                                System.out.println("voter is silencer");
-                            if (!findingThePlayer(voterName).isLive)
-                                System.out.println("The voter already dead");
-                            if (!findingThePlayer(voted).isLive)
-                                System.out.println("votee already dead");
+                            if (!votee.isLive)
+                                System.out.println( votee.name+" already dead");
+                            if (voter.isSilent)
+                                System.out.println("name1 is silencer");
+                            if (!voter.isLive)
+                                System.out.println(voter.name+" already dead");
                         }
                     }
                 }catch (Exception e) {
-                    switch (vote) {
-                        case "create_game":
-                            System.out.println("the game already created");
-                            break;
-                        case "assign_role":
-                            System.out.println("you already assign the role of all players");
-                            break;
-                        case "start_game":
-                            System.out.println("the game already started");
-                            break;
-                        case "get_game_state":
-                            getGameStatus();
-                            break;
+                    switch (voteAndVoter) {
+                        case "create_game" -> System.out.println("the game already created");
+                        case "assign_role" -> System.out.println("you already assign the role of all players");
+                        case "start_game" -> System.out.println("the game already started");
+                        case "get_game_state" -> getGameStatus();
+                        default -> System.out.println("command not found");
                     }
                 }
-                vote=scanner.nextLine();
+                voteAndVoter=scanner.nextLine();
             }
             Player temp = players[0];
             boolean shouldKill=true;
@@ -184,10 +180,14 @@ public class God {
             if (shouldKill){
                 temp.isLive=false;
                 System.out.println("The Player " + temp.name + " kiled");
+            }else {
+                System.out.println("no player kiled ");
             }
             for (Player player:players){
-                if (player!=null)
-                player.isSilent=false;
+                if (player!=null) {
+                    player.isSilent = false;
+                    player.conjectureMafiVote = 0;
+                }
             }
             middleOFNightAndDay("night");
         }else {
@@ -208,15 +208,15 @@ public class God {
                     System.out.println(" joker whit name " + player.name + " wone the Game");
                     System.exit(0);
                 }
-                if ((player instanceof Mafia && player.isLive) || (player instanceof GodFather && player.isLive)) {
+                if (player.isLive && (player instanceof Mafia  || player instanceof GodFather  || player instanceof Silencer )) {
                     numberOfMafis++;
                 }
-                if (player.isLive && !(player instanceof Mafia) && !(player instanceof GodFather)) {
+                if (player.isLive && !(player instanceof Mafia) && !(player instanceof GodFather) && !(player instanceof Silencer)) {
                     numberOfVilagers++;
                 }
             }
         }
-        if (numberOfMafis==0){
+        if (numberOfMafis==0 ){
             System.out.println("The vilagers wone the Game");
             System.exit(0);
         }
@@ -231,6 +231,7 @@ public class God {
     }
     
     private void night(){
+        System.out.println("nigth "+numberOfDayOrNight);
         for (Player player : players) {
             if (player!=null)
             if (player instanceof GettedUpPlayer && player.isLive) {
@@ -238,9 +239,9 @@ public class God {
             }
         }
         String command = scanner.nextLine();
-        Player[] killedByMafiInNigth = new Player[20];
-        boolean isDetectorChose=false;
-        while (!command.equals("nigth_end")) {
+        Player[] parr = new Player[20];
+        boolean firstChoseOfSilencer=true;
+        while (!command.equals("end_nigth")) {
             int firstSpace = command.indexOf(" ");
             try {
                 String name1 = command.substring(0, firstSpace);
@@ -248,35 +249,55 @@ public class God {
                 if (isTheName(name1) && isTheName(name2)) {
                     Player voter = findingThePlayer(name1);
                     Player votee = findingThePlayer(name2);
-
                     if (voter.isLive && votee.isLive) {
                         if (voter instanceof AsleepedPlayer) {
                             System.out.println("user can not wake up during night");
                         }
                         if (voter instanceof Detective) {
-                            if (!isDetectorChose) {
-                                if (votee instanceof Mafia) {
+                            if (!((Detective) voter).isVoted) {
+                                if (votee instanceof Mafia || votee instanceof Silencer) {
                                     System.out.println("YES");
                                 } else {
                                     System.out.println("NO");
                                 }
-                                isDetectorChose = true;
+                                ((Detective) voter).isVoted = true;
                             } else {
                                 System.out.println("detective has already asked");
                             }
                         }
-                        if (voter instanceof Silencer) {
-                            votee.isSilent = true;
-                        }
-                        if (voter instanceof Mafia || voter instanceof GodFather) {
-                            for (Player player : killedByMafiInNigth) {
-                                if (player == null) {
-                                    player = votee;
+                        if (firstChoseOfSilencer) {
+                            if (voter instanceof Silencer) {
+                                if (!((Silencer) voter).isVoted) {
+                                    votee.isSilent = true;
+                                    ((Silencer) voter).isVoted = true;
+                                    firstChoseOfSilencer=false;
+                                } else {
+                                    System.out.println("silencer already voted for silence");
                                 }
                             }
                         }
                         if (voter instanceof Doctor) {
-                            votee.rescue=true;
+                            if (!((Doctor) voter).isVoted) {
+                                votee.rescue = true;
+                                ((Doctor) voter).isVoted = true;
+                            }else {
+                                System.out.println("doctor already voted");
+                            }
+                        }
+                        if ((voter instanceof Mafia || voter instanceof GodFather || (voter instanceof Silencer &&
+                                ((Silencer) voter).isVoted)) && !(votee instanceof Joker) ) {
+                            for (int i=0,j=1;i<parr.length;i+=2,j+=2){
+                                if (parr[i]==null){
+                                    parr[i]=voter;
+                                    parr[j]=votee ;
+                                    break;
+                                }else {
+                                    if (parr[i].equals(voter)){
+                                        parr[j]=votee;
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     } else {
                         if (!voter.isLive) {
@@ -286,11 +307,6 @@ public class God {
                             System.out.println("votee already dead");
                         }
                     }
-                }else {
-                    if (isTheName(name1))
-                        System.out.println("the player whith name " + name1 + " not found");
-                    if (isTheName(name2))
-                        System.out.println("the player whith name " + name2 + " not found");
                 }
             } catch (Exception exception) {
                 switch (command) {
@@ -306,33 +322,111 @@ public class God {
                     case "get_game_state":
                         getGameStatus();
                         break;
+                    default:
+                        System.out.println("command not found");
                 }
             }
             command = scanner.nextLine();
         }
 
+        for (int i=1;parr[i]!=null;i+=2){
+            for (Player player:players){
+                if (player!=null){
+                    if (parr[i].equals(player)){
+                        player.conjectureMafiVote++;
+                        break;
+                    }
+                }
+            }
+        }
 
-        // TODO: 25/03/2021 a way for detecting killed or not
+        Player mostVote=players[0];
+        int repete = 0;
+        Player[] outed = new Player[20];
+        outed[repete] = mostVote;
+        for (Player player:players){
+            if (player!=null){
+                if (!player.equals(mostVote) && player.conjectureMafiVote!=0) {
+                    if (mostVote.conjectureMafiVote == player.conjectureMafiVote) {
+                        repete++;
+                        outed[repete] = player;
+                    }
+                    if (mostVote.conjectureMafiVote < player.conjectureMafiVote) {
+                        mostVote = player;
+                        repete = 0;
+                        for (int i=0;outed[i]!=null;i++){
+                            outed[i]=null;
+                        }
+                        outed[repete] = mostVote;
+                    }
+                }
+            }
+        }
 
+        repete++;
+        if (repete==1) {
+            for (Player player:players){
+                if (player!=null){
+                    if (player.conjectureMafiVote!=0){
+                        mostVote.die();
+                        break;
+                    }
+                }
+            }
+        }else {
+            if (repete - getSaved(outed) == 0 || repete - getSaved(outed) > 1) {
+                System.out.println("no player killed ");
+            }
+            if (repete-getSaved(outed)==1){
+                for (Player player : outed){
+                    if (player!=null){
+                        if (!player.rescue){
+                            player.die();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Player player : players){
+            if (player!=null){
+                if (player instanceof GettedUpPlayer) {
+                    ((GettedUpPlayer) player).isVoted=false;
+                }
+                player.conjectureMafiVote = 0;
+                player.rescue = false;
+            }
+        }
         numberOfDayOrNight++;
         middleOFNightAndDay("day");
     }
 
     public void getGameStatus(){
-        int numberOfLivedPlayers=0;
-        for (Player player : players){
-            if (player!=null)
-            if (player.isLive && !(player instanceof GodFather) && !(player instanceof Mafia)){
-                numberOfLivedPlayers++;
-            }
-        }
+        int numberOfVilagers=0;
         int numberOfMafia=0;
         for (Player player : players){
-            if (player!=null)
-            if (player instanceof Mafia || player instanceof GodFather){
-                numberOfMafia++;
+            if (player!=null) {
+                if (player.isLive && !(player instanceof GodFather) && !(player instanceof Mafia) && !(player instanceof Silencer)) {
+                    numberOfVilagers++;
+                }
+                if (player.isLive && (player instanceof GodFather || player instanceof Mafia || player instanceof Silencer)){
+                    numberOfMafia++;
+                }
             }
         }
-        System.out.println("we have now " + numberOfMafia + " mafia & " + numberOfLivedPlayers + " lived vilager");
+        System.out.println("we have now " + numberOfMafia + " mafia & " + numberOfVilagers + " lived vilager");
+    }
+
+    private int getSaved(Player[] outed){
+        int saved=0;
+        for (Player player : outed){
+            if (player!=null){
+                if (player.rescue){
+                    saved++;
+                }
+            }
+        }
+        return saved;
     }
 }
