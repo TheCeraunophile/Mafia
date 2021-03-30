@@ -19,22 +19,26 @@ public class God {
     }
 
     public void creatingGame(){
-        System.out.println("inpute name of players");
-        isGameCreated=true;
-        String names=scanner.nextLine();
-        Pattern pattern1 = Pattern.compile("[a-z,A-Z]{1,}");
-        Matcher matcher1 = pattern1.matcher(names);
-        while (matcher1.find()){
-            nameOfPlayers[lengthOfPlayersNames]=names.substring(matcher1.start(), matcher1.end());
-            lengthOfPlayersNames++;
-        }
-        if (lengthOfPlayersNames<8){
-            System.out.println("you must atlaste input 8 player you should input "
-                    + (8 - lengthOfPlayersNames) + " player more");
-            System.out.println("waiting to input remained player");
-            creatingGame();
+        if (!isGameCreated) {
+            System.out.println("inpute name of players");
+            isGameCreated = true;
+            String names = scanner.nextLine();
+            Pattern pattern1 = Pattern.compile("[a-z,A-Z]{1,}");
+            Matcher matcher1 = pattern1.matcher(names);
+            while (matcher1.find()) {
+                nameOfPlayers[lengthOfPlayersNames] = names.substring(matcher1.start(), matcher1.end());
+                lengthOfPlayersNames++;
+            }
+            if (lengthOfPlayersNames < 8) {
+                System.out.println("you must atlaste input 8 player you should input "
+                        + (8 - lengthOfPlayersNames) + " player more");
+                System.out.println("waiting to input remained player");
+                creatingGame();
+            } else {
+                System.out.println("player's names added succesfuly");
+            }
         }else {
-            System.out.println("player's names added succesfuly");
+            System.out.println("you alreayy create game");
         }
     }
 
@@ -72,6 +76,7 @@ public class God {
                     case doctor -> players[counter] = new Doctor(name, role);
                     case detective -> players[counter] = new Detective(name, role);
                     case silencer -> players[counter] = new Silencer(name, role);
+                    case informer -> players[counter] = new Informer(name,role);
                 }
                 System.out.println("the player with name "+name+" and role of "+nameOfRole+" is add succesfuly");
                 break;
@@ -119,9 +124,9 @@ public class God {
     }
 
     public void day(){
-        System.out.println("Day " + numberOfDayOrNight);
         if (isGameCreated && rolesPushed){
             gameStarted=true;
+            System.out.println("Day " + numberOfDayOrNight);
             for (Player player : players) {
                 if (player!=null)
                 if (!player.isSilent && player.isLive){
@@ -155,6 +160,7 @@ public class God {
                         case "assign_role" -> System.out.println("you already assign the role of all players");
                         case "start_game" -> System.out.println("the game already started");
                         case "get_game_state" -> getGameStatus();
+                        case "swap_character"-> System.out.println("can’t swap before end of night");
                         default -> System.out.println("command not found");
                     }
                 }
@@ -208,10 +214,10 @@ public class God {
                     System.out.println(" joker whit name " + player.name + " wone the Game");
                     System.exit(0);
                 }
-                if (player.isLive && (player instanceof Mafia  || player instanceof GodFather  || player instanceof Silencer )) {
+                if (player.isLive && player instanceof MafiaGroupe) {
                     numberOfMafis++;
                 }
-                if (player.isLive && !(player instanceof Mafia) && !(player instanceof GodFather) && !(player instanceof Silencer)) {
+                if (player.isLive && !(player instanceof MafiaGroupe)) {
                     numberOfVilagers++;
                 }
             }
@@ -267,7 +273,7 @@ public class God {
                         }
                         if (firstChoseOfSilencer) {
                             if (voter instanceof Silencer) {
-                                if (!((Silencer) voter).isVoted) {
+                                if (((Silencer) voter).isVoted) {
                                     votee.isSilent = true;
                                     ((Silencer) voter).isVoted = true;
                                     firstChoseOfSilencer=false;
@@ -284,8 +290,8 @@ public class God {
                                 System.out.println("doctor already voted");
                             }
                         }
-                        if ((voter instanceof Mafia || voter instanceof GodFather || (voter instanceof Silencer &&
-                                ((Silencer) voter).isVoted)) && !(votee instanceof Joker) ) {
+                        if ((voter instanceof Mafia || voter instanceof GodFather || (voter instanceof Silencer
+                                && ((Silencer) voter).isVoted)) && !(votee instanceof Joker) ) {
                             for (int i=0,j=1;i<parr.length;i+=2,j+=2){
                                 if (parr[i]==null){
                                     parr[i]=voter;
@@ -310,20 +316,12 @@ public class God {
                 }
             } catch (Exception exception) {
                 switch (command) {
-                    case "create_game":
-                        System.out.println("the game already created");
-                        break;
-                    case "assign_role":
-                        System.out.println("you already assign the role of all players");
-                        break;
-                    case "start_game":
-                        System.out.println("the game already started");
-                        break;
-                    case "get_game_state":
-                        getGameStatus();
-                        break;
-                    default:
-                        System.out.println("command not found");
+                    case "create_game"->System.out.println("the game already created");
+                    case "assign_role"-> System.out.println("you already assign the role of all players");
+                    case "start_game"-> System.out.println("the game already started");
+                    case "get_game_state"-> getGameStatus();
+                    case "swap_character"-> System.out.println("can’t swap before end of night");
+                    default-> System.out.println("command not found");
                 }
             }
             command = scanner.nextLine();
@@ -368,7 +366,11 @@ public class God {
             for (Player player:players){
                 if (player!=null){
                     if (player.conjectureMafiVote!=0){
-                        mostVote.die();
+                        if (player instanceof Informer){
+                            mostVote.die(players);
+                        }else {
+                            mostVote.die();
+                        }
                         break;
                     }
                 }
@@ -381,7 +383,11 @@ public class God {
                 for (Player player : outed){
                     if (player!=null){
                         if (!player.rescue){
-                            player.die();
+                            if (player instanceof Informer){
+                                player.die(players);
+                            }else {
+                                player.die();
+                            }
                             break;
                         }
                     }
@@ -398,8 +404,9 @@ public class God {
                 player.rescue = false;
             }
         }
+
         numberOfDayOrNight++;
-	swap();
+        swap();
         middleOFNightAndDay("day");
     }
 
@@ -408,10 +415,10 @@ public class God {
         int numberOfMafia=0;
         for (Player player : players){
             if (player!=null) {
-                if (player.isLive && !(player instanceof GodFather) && !(player instanceof Mafia) && !(player instanceof Silencer)) {
+                if (player.isLive && !(player instanceof MafiaGroupe)) {
                     numberOfVilagers++;
                 }
-                if (player.isLive && (player instanceof GodFather || player instanceof Mafia || player instanceof Silencer)){
+                if (player.isLive && player instanceof MafiaGroupe){
                     numberOfMafia++;
                 }
             }
@@ -430,6 +437,7 @@ public class God {
         }
         return saved;
     }
+
     private void swap(){
         System.out.println("if you wan swap two character write their name or not press any key");
         String names = scanner.nextLine();

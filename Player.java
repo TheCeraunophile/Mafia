@@ -16,6 +16,19 @@ public class Player {
         }
     }
 
+    protected void die(Player... players){
+        if (rescue){
+            rescue=false;
+            System.out.println("no player kiled -__- Doctor saved");
+        }else {
+            System.out.println("player with name "+this.name+" kiled");
+            isLive=false;
+            if (this instanceof Informer) {
+                ((Informer) this).informerTask(players);
+            }
+        }
+    }
+
     protected Player(String name,Roles role) {
         this.name = name;
         this.role=role;
