@@ -399,6 +399,7 @@ public class God {
             }
         }
         numberOfDayOrNight++;
+	swap();
         middleOFNightAndDay("day");
     }
 
@@ -428,5 +429,35 @@ public class God {
             }
         }
         return saved;
+    }
+    private void swap(){
+        System.out.println("if you wan swap two character write their name or not press any key");
+        String names = scanner.nextLine();
+        boolean swaped = false;
+        int firstSpace = names.indexOf(" ");
+        while (!swaped) {
+            try {
+                String name1 = names.substring(0, firstSpace);
+                String name2 = names.substring(++firstSpace);
+                if (isTheName(name1) && isTheName(name2)) {
+                    Player character1 = findingThePlayer(name1);
+                    Player character2 = findingThePlayer(name2);
+                    if (character1.isLive && character2.isLive) {
+                        String name = character1.name;
+                        character1.name = character2.name;
+                        character2.name = name;
+                        swaped=true;
+                        System.out.println("the swap doned successfuly");
+                    } else {
+                        if (!character1.isLive)
+                            System.out.println("the player " + character1 + " already died");
+                        if (!character2.isLive)
+                            System.out.println("the player " + character2 + " already died");
+                    }
+                }
+            } catch (Exception exception) {
+                swaped = true;
+            }
+        }
     }
 }
