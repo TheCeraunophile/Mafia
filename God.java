@@ -1,17 +1,8 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Scanner;
-/**
- * God is singleton that every command from Main class
- * arrows in methods that exist in this
- * commands should be respectively that in most methods
- * that checked by some boolean
- * */
 public class God {
-    /**
-     * for manage state of every player with specific role
-     * we have a composition of Player class
-     * */
+
     private static final God god = new God();
     private static int numberOfDayOrNight =1;
     private boolean isGameCreated=false;
@@ -63,7 +54,7 @@ public class God {
      * */
 
     private boolean isTheName(String name){
-        for (String nameOfPlayer : nameOfPlayers){
+        for (String nameOfPlayer : this.nameOfPlayers){
             if (nameOfPlayer!=null)
             if (nameOfPlayer.equals(name)){
                 return true;
@@ -112,11 +103,13 @@ public class God {
      * */
 
     public void assignRole(){
-        if (!isGameCreated || gameStarted){
-            if (gameStarted) {
+        if (!isGameCreated || gameStarted || rolesPushed){
+            if (!isGameCreated) {
+                System.out.println("You should first create a game then assign role for players");
+            }else if(gameStarted){
                 System.out.println("Game already started and all of the players has role");
             }else {
-                System.out.println("You should first create a game then assign role for players");
+                System.out.println("all of the players has role");
             }
         }else {
             System.out.println("Waiting to assign");
@@ -274,7 +267,7 @@ public class God {
             case "night" -> night();
         }
     }
-    
+
     private void night(){
         System.out.println("night "+numberOfDayOrNight);
         for (Player player : players) {
@@ -312,7 +305,7 @@ public class God {
                         }
                         if (firstChoseOfSilencer) {
                             if (voter instanceof Silencer) {
-                                if (((Silencer) voter).isVoted) {
+                                if (!((Silencer) voter).isVoted) {
                                     votee.isSilent = true;
                                     ((Silencer) voter).isVoted = true;
                                     firstChoseOfSilencer=false;
@@ -449,10 +442,6 @@ public class God {
         middleOFNightAndDay("day");
     }
 
-    /**
-     * return numbers of mafia and villager
-     * */
-
     public void getGameStatus(){
         int numberOfVilagers=0;
         int numberOfMafia=0;
@@ -491,8 +480,8 @@ public class God {
         System.out.println("If you wan swap two character write their name or Not press any key");
         String names = scanner.nextLine();
         boolean swaped = false;
-        int firstSpace = names.indexOf(" ");
         while (!swaped) {
+            int firstSpace = names.indexOf(" ");
             try {
                 String name1 = names.substring(0, firstSpace);
                 String name2 = names.substring(++firstSpace);
@@ -511,6 +500,8 @@ public class God {
                         if (!character2.isLive)
                             System.out.println("The player " + character2 + " already died");
                     }
+                }else {
+                    names= scanner.nextLine();
                 }
             } catch (Exception exception) {
                 swaped = true;
