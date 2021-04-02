@@ -52,9 +52,20 @@ class Informer extends MustBeSleep{
         int action = random.nextInt(floor);
         switch (action){
             case 0 -> firstWordOfMafia();
-            case 1 -> numberOfLivedMafia();
-            case 2 -> firstWordOfJokerName();
-            case 3 -> System.out.println(":/");
+            case 1 -> firstWordOfJokerName();
+            case 2 -> WVBK();
+            case 3 ->  numberOfLivedMafia();
+        }
+    }
+
+    private void WVBK(){
+        for (Player player : this.player){
+            if (player!=null){
+                if (player.isLive && player.conjectureMafiVote!=0){
+                    System.out.println(player.name+" was voted to be killed");
+                    break;
+                }
+            }
         }
     }
 

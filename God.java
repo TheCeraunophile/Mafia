@@ -397,7 +397,7 @@ public class God {
         if (repete==1) {
             for (Player player:players){
                 if (player!=null){
-                    if (player.conjectureMafiVote!=0){
+                    if (player.conjectureMafiVote!=0 && player.conjectureMafiVote== mostVote.conjectureMafiVote){
                         if (player instanceof Informer){
                             mostVote.die(players);
                         }else {
