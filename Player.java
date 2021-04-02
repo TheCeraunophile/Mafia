@@ -1,8 +1,3 @@
-/**
- * The player class is most basic class in compare with others
- * includes other class without God class that are role player
- *
- * */
 public class Player {
     protected String name;
     protected Roles role;
