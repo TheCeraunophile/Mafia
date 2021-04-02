@@ -7,8 +7,7 @@ public class MustBeGetUp extends Player{
 
     @Override
     public String toString(){
-        String result =" The person : " + name + " With role of " + role;
-        return result;
+        return "Player : " + name + " With role of " + role;
     }
 }
 class Detective extends MustBeGetUp {
@@ -23,19 +22,26 @@ class Doctor extends MustBeGetUp {
         super(name, role);
     }
 }
-class Mafia extends MustBeGetUp {
+class MafiaGroupe extends MustBeGetUp{
+
+    public MafiaGroupe(String name, Roles role){
+        super(name,role);
+    }
+
+}
+class Mafia extends MafiaGroupe {
 
     public Mafia(String name, Roles role) {
         super(name, role);
     }
 }
-class GodFather extends MustBeGetUp {
+class GodFather extends MafiaGroupe {
 
     public GodFather(String name, Roles role) {
         super(name, role);
     }
 }
-class Silencer extends MustBeGetUp {
+class Silencer extends MafiaGroupe {
 
     public Silencer(String name, Roles role) {
         super(name, role);

@@ -1,7 +1,17 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Scanner;
+/**
+ * God is singleton that every command from Main class
+ * arrows in methods that exist in this
+ * commands should be respectively that in most methods
+ * that checked by some boolean
+ * */
 public class God {
+    /**
+     * for manage state of every player with specific role
+     * we have a composition of Player class
+     * */
     private static final God god = new God();
     private static int numberOfDayOrNight =1;
     private boolean isGameCreated=false;
@@ -18,9 +28,15 @@ public class God {
         return god;
     }
 
+    /**
+     * pushed name of players in a string array
+     * that we can diagnose in assigning the role of players
+     * that if this name defined or Not
+     * */
+
     public void creatingGame(){
         if (!isGameCreated) {
-            System.out.println("inpute name of players");
+            System.out.println("Waiting to enter names");
             isGameCreated = true;
             String names = scanner.nextLine();
             Pattern pattern1 = Pattern.compile("[a-z,A-Z]{1,}");
@@ -30,17 +46,21 @@ public class God {
                 lengthOfPlayersNames++;
             }
             if (lengthOfPlayersNames < 8) {
-                System.out.println("you must atlaste input 8 player you should input "
-                        + (8 - lengthOfPlayersNames) + " player more");
-                System.out.println("waiting to input remained player");
+                System.out.println("You must At least enter 8 player and "
+                        + (8 - lengthOfPlayersNames) + " is remained");
                 creatingGame();
             } else {
-                System.out.println("player's names added succesfuly");
+                System.out.println("The names of the players were saved successfully");
             }
         }else {
-            System.out.println("you alreayy create game");
+            System.out.println("You made the game before");
         }
     }
+
+    /**
+     * search for finding a player with specific name
+     * @param name a name that we want to know is it in players or not
+     * */
 
     private boolean isTheName(String name){
         for (String nameOfPlayer : nameOfPlayers){
@@ -78,23 +98,28 @@ public class God {
                     case silencer -> players[counter] = new Silencer(name, role);
                     case informer -> players[counter] = new Informer(name,role);
                 }
-                System.out.println("the player with name "+name+" and role of "+nameOfRole+" is add succesfuly");
+                System.out.println("Player with name:  "+name+" And role:  "+nameOfRole+" Saved successfully");
                 break;
             }
         }
         if (players[counter]==null)
-            System.out.println("The Role ' " + nameOfRole + " ' Not found");
+            System.out.println("The Role: " + nameOfRole + " Not found");
     }
+
+    /**
+     * whit try we understand scanner entered a command or assign
+     * and counter to show all players assigned or not
+     * */
 
     public void assignRole(){
         if (!isGameCreated || gameStarted){
             if (gameStarted) {
-                System.out.println("game already started and all of the players has role");
+                System.out.println("Game already started and all of the players has role");
             }else {
-                System.out.println("you should first create a game then assign role for players");
+                System.out.println("You should first create a game then assign role for players");
             }
         }else {
-            System.out.println("wayting to assign");
+            System.out.println("Waiting to assign");
             int counter=0;
             while (counter < lengthOfPlayersNames){
                 String line = scanner.nextLine();
@@ -113,15 +138,22 @@ public class God {
                     }
                 }catch (Exception exception){
                     switch (line) {
-                        case "start_game" -> System.out.println((lengthOfPlayersNames - counter) +
-                                " player whitout a role you should first detect their role");
-                        case "create_game" -> System.out.println("you already create your game");
-                        default -> System.out.println("command not found");
+                        case "start_game" -> System.out.println("There are "+(lengthOfPlayersNames - counter) +
+                                " Players without a role. You should first determine their roles");
+                        case "create_game" -> System.out.println("You already create your game");
+                        default -> System.out.println("Your command is undefined");
                     }
                 }
             }
         }
     }
+
+    /**
+     * this method started whit command start_game and
+     * starts Day mode of game , in last of Day , the other
+     * mode of game named Night started automatically (if the
+     * game not ended)
+     * */
 
     public void day(){
         if (isGameCreated && rolesPushed){
@@ -133,7 +165,7 @@ public class God {
                     System.out.println(player);
                 }
             }
-            System.out.println("waited for votee & voter");
+            System.out.println("Waiting for votee & voter");
             String voteAndVoter=scanner.nextLine();
             while (!voteAndVoter.equals("end_vote")){
                 int firstSpace=voteAndVoter.indexOf(" ");
@@ -147,21 +179,21 @@ public class God {
                             votee.conjectureMafiVote++;
                         }else {
                             if (!votee.isLive)
-                                System.out.println( votee.name+" already dead");
+                                System.out.println( votee.name+" had died");
                             if (voter.isSilent)
-                                System.out.println("name1 is silencer");
+                                System.out.println(voter.name+" is silence");
                             if (!voter.isLive)
-                                System.out.println(voter.name+" already dead");
+                                System.out.println(voter.name+" had died");
                         }
                     }
                 }catch (Exception e) {
                     switch (voteAndVoter) {
-                        case "create_game" -> System.out.println("the game already created");
-                        case "assign_role" -> System.out.println("you already assign the role of all players");
-                        case "start_game" -> System.out.println("the game already started");
+                        case "create_game" -> System.out.println("The game already created");
+                        case "assign_role" -> System.out.println("You have already assigned the role of all the players");
+                        case "start_game" -> System.out.println("The game already started");
                         case "get_game_state" -> getGameStatus();
-                        case "swap_character"-> System.out.println("can’t swap before end of night");
-                        default -> System.out.println("command not found");
+                        case "swap_character"-> System.out.println("Can't swap before end of night");
+                        default -> System.out.println("Your command is undefined");
                     }
                 }
                 voteAndVoter=scanner.nextLine();
@@ -185,9 +217,9 @@ public class God {
             }
             if (shouldKill){
                 temp.isLive=false;
-                System.out.println("The Player " + temp.name + " kiled");
+                System.out.println("The Player " + temp.name + " Was killed");
             }else {
-                System.out.println("no player kiled ");
+                System.out.println("No players were killed");
             }
             for (Player player:players){
                 if (player!=null) {
@@ -198,20 +230,27 @@ public class God {
             middleOFNightAndDay("night");
         }else {
             if (!isGameCreated){
-                System.out.println("no created Game yet");
+                System.out.println("The game has not been made yet");
             }else {
-                System.out.println("one or more players has not a role yet");
+                System.out.println("One or more players has not a role yet");
             }
         }
     }
-    
+
+    /**
+     * this method check the game ended or not
+     * @param DayOrNight whit two state , Night
+     * or Day that these show if game not ended
+     * be start another Day or Night
+     * */
+
     private void middleOFNightAndDay(String DayOrNight){
         int numberOfMafis=0;
         int numberOfVilagers=0;
         for (Player player : players) {
             if (player!=null) {
                 if (player instanceof Joker && !player.isLive) {
-                    System.out.println(" joker whit name " + player.name + " wone the Game");
+                    System.out.println(" Joker whit name " + player.name + " Won the Game");
                     System.exit(0);
                 }
                 if (player.isLive && player instanceof MafiaGroupe) {
@@ -223,11 +262,11 @@ public class God {
             }
         }
         if (numberOfMafis==0 ){
-            System.out.println("The vilagers wone the Game");
+            System.out.println("The villagers won the Game");
             System.exit(0);
         }
         if (numberOfVilagers==numberOfMafis){
-            System.out.println("The mafias wone the Game");
+            System.out.println("The mafias won the Game");
             System.exit(0);
         }
         switch (DayOrNight) {
@@ -237,7 +276,7 @@ public class God {
     }
     
     private void night(){
-        System.out.println("nigth "+numberOfDayOrNight);
+        System.out.println("night "+numberOfDayOrNight);
         for (Player player : players) {
             if (player!=null)
             if (player instanceof MustBeGetUp && player.isLive) {
@@ -247,7 +286,7 @@ public class God {
         String command = scanner.nextLine();
         Player[] parr = new Player[20];
         boolean firstChoseOfSilencer=true;
-        while (!command.equals("end_nigth")) {
+        while (!command.equals("end_night")) {
             int firstSpace = command.indexOf(" ");
             try {
                 String name1 = command.substring(0, firstSpace);
@@ -257,7 +296,7 @@ public class God {
                     Player votee = findingThePlayer(name2);
                     if (voter.isLive && votee.isLive) {
                         if (voter instanceof MustBeSleep) {
-                            System.out.println("user can not wake up during night");
+                            System.out.println("User can not wake up during night");
                         }
                         if (voter instanceof Detective) {
                             if (!((Detective) voter).isVoted) {
@@ -268,7 +307,7 @@ public class God {
                                 }
                                 ((Detective) voter).isVoted = true;
                             } else {
-                                System.out.println("detective has already asked");
+                                System.out.println("Detective has already asked");
                             }
                         }
                         if (firstChoseOfSilencer) {
@@ -278,7 +317,7 @@ public class God {
                                     ((Silencer) voter).isVoted = true;
                                     firstChoseOfSilencer=false;
                                 } else {
-                                    System.out.println("silencer already voted for silence");
+                                    System.out.println("Silencer has already voted");
                                 }
                             }
                         }
@@ -287,7 +326,7 @@ public class God {
                                 votee.rescue = true;
                                 ((Doctor) voter).isVoted = true;
                             }else {
-                                System.out.println("doctor already voted");
+                                System.out.println("Doctor has already saved");
                             }
                         }
                         if ((voter instanceof Mafia || voter instanceof GodFather || (voter instanceof Silencer
@@ -307,21 +346,21 @@ public class God {
                         }
                     } else {
                         if (!voter.isLive) {
-                            System.out.println("the player can't wakeup during the nigth");
+                            System.out.println("Voter already dead");
                         }
                         if (!votee.isLive) {
-                            System.out.println("votee already dead");
+                            System.out.println("Votee already dead");
                         }
                     }
                 }
             } catch (Exception exception) {
                 switch (command) {
-                    case "create_game"->System.out.println("the game already created");
-                    case "assign_role"-> System.out.println("you already assign the role of all players");
-                    case "start_game"-> System.out.println("the game already started");
+                    case "create_game"->System.out.println("The game already created");
+                    case "assign_role"-> System.out.println("You already assign the role of all players");
+                    case "start_game"-> System.out.println("The game already started");
                     case "get_game_state"-> getGameStatus();
-                    case "swap_character"-> System.out.println("can’t swap before end of night");
-                    default-> System.out.println("command not found");
+                    case "swap_character"-> System.out.println("Can’t swap before end of night");
+                    default-> System.out.println("Your command is undefined");
                 }
             }
             command = scanner.nextLine();
@@ -377,7 +416,7 @@ public class God {
             }
         }else {
             if (repete - getSaved(outed) == 0 || repete - getSaved(outed) > 1) {
-                System.out.println("no player killed ");
+                System.out.println("No players were killed");
             }
             if (repete-getSaved(outed)==1){
                 for (Player player : outed){
@@ -410,6 +449,10 @@ public class God {
         middleOFNightAndDay("day");
     }
 
+    /**
+     * return numbers of mafia and villager
+     * */
+
     public void getGameStatus(){
         int numberOfVilagers=0;
         int numberOfMafia=0;
@@ -423,8 +466,14 @@ public class God {
                 }
             }
         }
-        System.out.println("we have now " + numberOfMafia + " mafia & " + numberOfVilagers + " lived vilager");
+        System.out.println("We have now " + numberOfMafia + " mafias & " + numberOfVilagers + " lived villagers");
     }
+
+    /**
+     * return How many player saved whit doctors or doctor to
+     * we could understand by end of night a person in players
+     * killed or not
+     * */
 
     private int getSaved(Player[] outed){
         int saved=0;
@@ -439,7 +488,7 @@ public class God {
     }
 
     private void swap(){
-        System.out.println("if you wan swap two character write their name or not press any key");
+        System.out.println("If you wan swap two character write their name or Not press any key");
         String names = scanner.nextLine();
         boolean swaped = false;
         int firstSpace = names.indexOf(" ");
@@ -455,12 +504,12 @@ public class God {
                         character1.name = character2.name;
                         character2.name = name;
                         swaped=true;
-                        System.out.println("the swap doned successfuly");
+                        System.out.println("The swap done successfully");
                     } else {
                         if (!character1.isLive)
-                            System.out.println("the player " + character1 + " already died");
+                            System.out.println("The player " + character1 + " already died");
                         if (!character2.isLive)
-                            System.out.println("the player " + character2 + " already died");
+                            System.out.println("The player " + character2 + " already died");
                     }
                 }
             } catch (Exception exception) {

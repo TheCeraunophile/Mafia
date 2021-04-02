@@ -29,10 +29,10 @@ class BulletProof extends MustBeSleep{
         if (this.hasProof || super.rescue) {
             this.hasProof=false;
             super.rescue=false;
-            System.out.println("no player kiled ");
+            System.out.println("No players were killed");
         }else {
             super.isLive=false;
-            System.out.println("the player with name " + super.name + " killed");
+            System.out.println("Player with name " + super.name + " Killed");
         }
     }
 }

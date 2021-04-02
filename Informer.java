@@ -23,7 +23,7 @@ public class Informer extends Player{
         for (Player player:this.player){
             if (player!=null){
                 if (player.isLive && player instanceof MafiaGroupe){
-                    System.out.println("first word of ones mafia's name is "+player.name.charAt(0));
+                    System.out.println("There is a mafia who’s name starts with "+player.name.charAt(0));
                     break;
                 }
             }
@@ -34,7 +34,7 @@ public class Informer extends Player{
         for (Player player: this.player){
             if (player!=null){
                 if (player instanceof Joker ){
-                    System.out.println("first word of joker name is " + player.name.charAt(0));
+                    System.out.println("There is a joker who’s name starts with " + player.name.charAt(0));
                     break;
                 }
             }
@@ -50,6 +50,6 @@ public class Informer extends Player{
                 }
             }
         }
-        System.out.println("number of lived mafia is " + counter);
+        System.out.println("Number of alive mafia : " + counter);
     }
 }

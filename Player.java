@@ -1,3 +1,8 @@
+/**
+ * The player class is most basic class in compare with others
+ * includes other class without God class that are role player
+ *
+ * */
 public class Player {
     protected String name;
     protected Roles role;
@@ -9,9 +14,9 @@ public class Player {
     protected void die(){
         if (rescue) {
             rescue = false;
-            System.out.println("no player kiled -__- Doctor saved");
+            System.out.println("No player killed -__- Doctor saved");
         }else {
-            System.out.println("player with name "+this.name+" kiled");
+            System.out.println("Player with name "+this.name+" killed");
             isLive=false;
         }
     }
@@ -19,9 +24,9 @@ public class Player {
     protected void die(Player... players){
         if (rescue){
             rescue=false;
-            System.out.println("no player kiled -__- Doctor saved");
+            System.out.println("No player killed -__-  Doctor saved");
         }else {
-            System.out.println("player with name "+this.name+" kiled");
+            System.out.println("Player with name "+this.name+" killed");
             isLive=false;
             if (this instanceof Informer) {
                 ((Informer) this).informerTask(players);
@@ -36,7 +41,7 @@ public class Player {
 
     @Override
     public String toString(){
-        return " The person : " + name + " With role of " + role;
+        return "Player : " + name + " With role of " + role;
     }
 
     @Override

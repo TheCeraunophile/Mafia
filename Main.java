@@ -10,7 +10,7 @@ public class Main {
                 case "assign_role" -> god.assignRole();
                 case "start_game" -> god.day();
                 case "get_game_state" -> god.getGameStatus();
-                default -> System.out.println("your command is undifined");
+                default -> System.out.println("Your command is undefined");
             }
         }
     }
